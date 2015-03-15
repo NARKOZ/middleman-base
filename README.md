@@ -3,8 +3,10 @@
 Clone the repo and run:
 
 ```sh
-bundle install
+bundle && middleman
 ```
+
+Open `localhost:4567` in browser.
 
 Optionally adjust configuration.
 
