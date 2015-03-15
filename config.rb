@@ -1,44 +1,17 @@
-###
-# Compass
-###
+Slim::Engine.set_options format: :html
 
-# Change Compass configuration
-# compass_config do |config|
-#   config.output_style = :compact
-# end
-
-###
-# Page options, layouts, aliases and proxies
-###
-
-# Per-page layout changes:
-#
-# With no layout
-# page "/path/to/file.html", :layout => false
-#
-# With alternative layout
-# page "/path/to/file.html", :layout => :otherlayout
-#
-# A path which all have the same layout
-# with_layout :admin do
-#   page "/admin/*"
-# end
+set :css_dir, 'stylesheets'
+set :js_dir, 'javascripts'
+set :images_dir, 'images'
 
 # Proxy pages (https://middlemanapp.com/advanced/dynamic_pages/)
-# proxy "/this-page-has-no-template.html", "/template-file.html", :locals => {
-#  :which_fake_page => "Rendering a fake page with a local variable" }
-
-###
-# Helpers
-###
+# PAGES = %w()
+# PAGES.each do |page|
+#   proxy page, "#{page}.html"
+# end
 
 # Automatic image dimensions on image_tag helper
 # activate :automatic_image_sizes
-
-# Reload the browser automatically whenever files change
-# configure :development do
-#   activate :livereload
-# end
 
 # Methods defined in the helpers block are available in templates
 # helpers do
@@ -47,26 +20,45 @@
 #   end
 # end
 
-set :css_dir, 'stylesheets'
+# Deployment configuration
+commit_sha = `git log --pretty="%h" -n1`.strip
+commit_message = "update to #{commit_sha}"
 
-set :js_dir, 'javascripts'
+activate :deploy do |deploy|
+  deploy.build_before = true
+  deploy.method = :git
+  deploy.commit_message = commit_message
 
-set :images_dir, 'images'
+  # For GitHub user and organization pages
+  # deploy.branch = 'master'
+  # deploy.commit_message = 'initial commit'
+end
+
+# Development configuration
+configure :development do
+  activate :livereload
+
+  Slim::Engine.set_options pretty: true
+end
 
 # Build-specific configuration
 configure :build do
-  # For example, change the Compass output style for deployment
-  # activate :minify_css
+  # PAGES.map {|p| ignore p }
 
-  # Minify Javascript on build
-  # activate :minify_javascript
+  activate :minify_css
+  activate :minify_javascript
 
   # Enable cache buster
   # activate :asset_hash
 
   # Use relative URLs
-  # activate :relative_assets
-
-  # Or use a different image path
-  # set :http_prefix, "/Content/images/"
+  activate :relative_assets
 end
+
+# Copy README.md file to build dir
+# after_build do |builder|
+#   src = File.join config[:source], 'README.md'
+#   dst = File.join config[:build_dir], 'README.md'
+#   builder.source_paths << File.dirname(__FILE__)
+#   builder.copy_file src, dst
+# end
